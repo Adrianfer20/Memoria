@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsplash - Juego de Memoria</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="bg-gray-100">
+
+    <h1 class="text-gray-100 text-3xl md:text-6xl text-center font-bold bg-blue-900 shadow-sm py-5">Juego de Memoria!</h1>
+
+    <nav class="w-full flex items-center justify-between px-8 pt-6 pb-2">
+        <div>
+            <label for="category">Categoria:</label>
+            <select id="category" class="bg-gray-100 font-bold cursor-pointer">
+                <option value="random">Random</option>
+                <option value="dog">Perros</option>
+                <option value="cat">Gatos</option>
+                <option value="car">Carros</option>
+            </select>
+        </div>
+        <div class="">
+            <span>Aciertos: <strong id="count-success">0</strong></span>
+            <span>Fallidos: <strong id="count-fail">0</strong></span>
+        </div>
+    </nav>
+    <section id="wrapper-play" class="grid grid-cols-3 md:grid-cols-6 gap-4 px-4 py-8">
+    </section>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
