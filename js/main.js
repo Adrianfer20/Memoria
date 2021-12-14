@@ -1,42 +1,62 @@
 'use stric'
+//Api Husplash
 const ACCESSKEY = 'yEOJRkV-uEQrkSa5fbWUMICBsFSwBOfxGx_p6gJCHcc';
 const SECRETKEY = '1AiOiV6YWM_K9ev7v_zDzX4H6OPLGlBECERfrRZYILg';
-
 const endPoint = 'https://api.unsplash.com/search/photos';
 
-async function getImages(query) {
+//Get al Server
+const getImages = async () => {
+    let query = $id('category').value;
     let response = await fetch(endPoint + '?query=' + query + '&client_id=' + ACCESSKEY);
     let jsonResponse = await response.json();
     let imagesList = await jsonResponse.results;
-    createImages(imagesList);
+    creatCardImg(imagesList);
 }
 
-
-function createImages(imagesList) {
-    let imagesSrc = imagesList.map((img)=>img.urls.thumb);
-    imagesSrc.length = 6;
-    let listDuplicate = [...imagesSrc, ...imagesSrc];
-
-    const random = listDuplicate.sort(()=> Math.random() - 0.5);
-    $id('wrapper-play').innerHTML = '';
-    for (let i = 0; i < 12; i++) {
-        const cardImage = document.createElement('div');
-        const image = document.createElement('img');
-        cardImage.className = 'bg-green-400 hover:bg-green-600 cursor-pointer rounded-md shadow-md';
-
-        image.className = 'w-full h-48 object-cover opacity-0';
-        image.src = random[i];
-        cardImage.appendChild(image);
-        $id('wrapper-play').appendChild(cardImage);
-    }
-}
-
-
+//DOM
 const $id = selector => document.getElementById(selector);
 const $wrapperPlay = $id('wrapper-play');
 const $btnReplay = $id('btn-replay');
 
-const showModal = (message)=>{
+const $getCheck = selector =>{
+    let nivel
+    let $radios = document.querySelectorAll('input[name="nivel"]');
+    $radios.forEach(element => {
+        if(element.checked) return nivel = element.value;
+    });
+    return nivel
+}
+
+//User Interface
+const creatCardImg = imagesList => {
+    let listSrcImg = imagesList.map((img)=>img.urls.thumb);
+    let nivel = $getCheck();
+    listSrcImg.length = nivel;
+    let listSrcImgDuplicate = [...listSrcImg, ...listSrcImg];
+
+    const listRandomImgs = listSrcImgDuplicate.sort(()=> Math.random() - 0.5);
+    showCardImg(listRandomImgs);
+}
+const showCardImg = imagesList => {
+    const $document = new DocumentFragment();
+    const cardMax = imagesList.length;
+    for (let i = 0; i < cardMax; i++) {
+        const cardImage = document.createElement('div');
+        const image = document.createElement('img');
+        cardImage.className = 'bg-gray-400 hover:bg-gray-500 bg-opacity-75 cursor-pointer rounded-md shadow-md';
+
+        image.className = 'w-full h-48 object-cover opacity-0';
+        image.src = imagesList[i];
+        cardImage.appendChild(image);
+        $document.appendChild(cardImage);
+
+    }
+    $id('wrapper-play').innerHTML = '';
+    $id('wrapper-play').appendChild($document);
+}
+
+
+const creatModal = message => {
     const modal = document.createElement('div');
     const btnReplay = document.createElement('button');
     const title = document.createElement('h2');
@@ -54,31 +74,33 @@ const showModal = (message)=>{
     modal.appendChild(btnReplay);
     modal.appendChild(title);
 
-    document.querySelector('body').appendChild(modal);
+    showModal(modal)
 }
+const showModal = modal => document.querySelector('body').appendChild(modal);
+
 
 const getCardShowing = nun => $id('wrapper-play').querySelectorAll('.opacity-100')[nun];
 
-const newTry = (firt, last)=>{
+const newTry = (firtCard, lastCard)=>{
     const count = $id('count-fail').textContent;
     $id('count-fail').textContent = +count + 1;
+    let nivel = $getCheck();
+    if(nivel <= $id('count-fail').textContent) return creatModal('Perdiste!')
     setTimeout(() => {
-        firt.classList.replace('opacity-100', 'opacity-0');
-        last.classList.replace('opacity-100', 'opacity-0');
+        firtCard.classList.replace('opacity-100', 'opacity-0');
+        lastCard.classList.replace('opacity-100', 'opacity-0');
     }, 700);
 }
-
-const success = (firt, last) =>{
-    firt.classList.remove('opacity-100');
-    last.classList.remove('opacity-100');
+const playSuccess = (firtCard, lastCard) =>{
+    firtCard.classList.remove('opacity-100');
+    lastCard.classList.remove('opacity-100');
     const count = $id('count-success').textContent;
     $id('count-success').textContent = +count + 1;
 
     const isWinner = $id('wrapper-play').querySelector('.opacity-0');
 
-    if(!isWinner) return showModal('Ganaste.');
+    if(!isWinner) return creatModal('Ganaste!');
 }
-
 const play = (card) => {
     const isOpacity = !card.classList.contains('opacity-0');
     if (isOpacity) return;
@@ -91,26 +113,20 @@ const play = (card) => {
     const firtCard = getCardShowing(0);
     const lastCard = getCardShowing(1);
 
-    const isWinner = firtCard.getAttribute('src') === lastCard.getAttribute('src')
+    const isWinner = firtCard.getAttribute('src') === lastCard.getAttribute('src');
     
     if(!isWinner) return newTry(firtCard,lastCard);
-    success(firtCard,lastCard)
+    playSuccess(firtCard,lastCard)
 }
 
-$wrapperPlay.addEventListener('click', (e) => {
-    play(e.target);
+//BOM
+document.addEventListener("DOMContentLoaded", getImages());
+document.addEventListener('click', e =>{
+    const id = e.target.id;
+    if(id == 'btnReplay'){return location.reload()}
+    if(e.target.getAttribute('src')){return play(e.target)}
+});
+document.addEventListener('change', (e)=>{
+    if( e.target.id = 'category' || e.target.id === 'dificulta') return getImages();
 });
 
-const $category = $id('category');
-
-getImages($category.value);
-
-$category.addEventListener('change', ()=>{
-    console.log($id('category').value);
-    getImages($id('category').value);
-})
-document.querySelector('body').addEventListener('click', (e)=>{
-    if(e.target.id == 'btnReplay'){
-        location.reload();
-    }
-})
