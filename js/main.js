@@ -6,11 +6,16 @@ const endPoint = 'https://api.unsplash.com/search/photos';
 
 //Get al Server
 const getImages = async () => {
-    let query = $id('category').value;
-    let response = await fetch(endPoint + '?query=' + query + '&client_id=' + ACCESSKEY);
-    let jsonResponse = await response.json();
-    let imagesList = await jsonResponse.results;
-    creatCardImg(imagesList);
+    try {
+        let query = $id('category').value;
+        let response = await fetch(endPoint + '?query=' + query + '&client_id=' + ACCESSKEY);
+        let jsonResponse = await response.json();
+        let imagesList = await jsonResponse.results;
+        creatCardImg(imagesList);
+        $id('loading').remove();
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 //DOM
@@ -104,7 +109,6 @@ const playSuccess = (firtCard, lastCard) =>{
 const play = (card) => {
     const isOpacity = !card.classList.contains('opacity-0');
     if (isOpacity) return;
-
     card.classList.replace('opacity-0', 'opacity-100');
     const playingMax = $id('wrapper-play').querySelectorAll('.opacity-100').length >= 2;
 
@@ -123,6 +127,7 @@ const play = (card) => {
 document.addEventListener("DOMContentLoaded", getImages());
 document.addEventListener('click', e =>{
     const id = e.target.id;
+    
     if(id == 'btnReplay'){return location.reload()}
     if(e.target.getAttribute('src')){return play(e.target)}
 });
