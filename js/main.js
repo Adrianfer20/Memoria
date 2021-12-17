@@ -126,9 +126,7 @@ const play = (card) => {
 //BOM
 document.addEventListener("DOMContentLoaded", getImages());
 document.addEventListener('click', e =>{
-    const id = e.target.id;
-    
-    if(id == 'btnReplay'){return location.reload()}
+    if(e.target.matches('btnReplay')){return location.reload()}
     if(e.target.getAttribute('src')){return play(e.target)}
 });
 document.addEventListener('change', (e)=>{
